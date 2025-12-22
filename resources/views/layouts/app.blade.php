@@ -68,15 +68,32 @@
             <!-- Main Content Area -->
             <main class="flex-1 overflow-auto">
                 <div id="app-content" class="max-w-7xl mx-auto p-6">
-                    {{ $slot }}
+                    <!-- Le contenu initial sera chargé ici par JS -->
                 </div>
             </main>
         </div>
     </div>
 
+    <!-- Hidden views for JavaScript SPA -->
+    @foreach($views as $name => $content)
+        <div data-page-name="{{ $name }}" style="display: none;">
+            {!! $content !!}
+        </div>
+    @endforeach
+
     <script>
-        // Initialize SPA - Defined in resources/js/app.js
+        // Initialization of the SPA
         document.addEventListener('DOMContentLoaded', function() {
+            // 1. Recover DOM views and store them in the JS
+            const views = {};
+            document.querySelectorAll('[data-page-name]').forEach(el => {
+                views[el.getAttribute('data-page-name')] = el.innerHTML;
+            });
+
+            // 2. Replace the VIEWS variable in app.js
+            window.VIEWS = views;
+
+            // 3. Initialize the SPA
             initializeSPA();
         });
     </script>
